@@ -20,6 +20,10 @@ def check_user_input(user_input):
 
         # Query to check if the user input exists in the USN field
         cursor.execute("SELECT * FROM student WHERE USN = %s", (user_input,))
+        
+        global temp
+        temp = user_input
+        
         result = cursor.fetchone()  # Use fetchone() for a single record
         print(result)
         conn.close()
@@ -62,29 +66,34 @@ def dashboard():
     print("works here")
     return render_template('dashboard.html')  # Render the dashboard.html page when redirected
 
-
+#GET ATTENDACE
 @app.route('/get_attendance')
 def get_attendance():
-    
-    conn = mysql.connector.connect(
-        host="localhost",      # Your MySQL host
-        user="root",           # Your MySQL username
-        password="Skibidi_Sigma",   # Your MySQL password
-        database="student_portal"  # The database to check
-    )
-    
-    if conn.is_connected():
-        cursor = conn.cursor()
-        # Query to check if the user input exists in the USN field
-        cursor.execute("SELECT Classes_taken,Classes_Attended FROM attendance")
-        rows = cursor.fetchall()  
+    try:
+        # Connect to MySQL database
+        conn = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="Skibidi_Sigma",
+            database="student_portal"
+        )
+        cursor = conn.cursor(dictionary=True)
+        
+        # Query to fetch attendance data
+        cursor.execute("SELECT Classes_Taken, Classes_Attended FROM Attendance")
+        rows = cursor.fetchall()
+        
+        # Close the connection
+        cursor.close()
         conn.close()
-        attendance_data = [{'Classes_taken': row[1],'Classes_Attended':row[2]} for row in rows]
-        return jsonify(attendance_data)  # Return data as JSON  # Returns None if no match, otherwise the matched user data
-    else:
-        print("Database connection failed.")
-        return jsonify({'error': 'Failed to connect to the database'})
-    
+        
+        # Return the data as JSON
+        return jsonify(rows)
+
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        return jsonify({"error": "Unable to fetch data"}), 500
+
     
 if __name__ == '__main__':
     app.run(debug=True)

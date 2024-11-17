@@ -1,0 +1,23 @@
+create database student_portal;
+
+use student_portal;
+
+
+
+CREATE TABLE Attendance ( USN VARCHAR(20),Classes_Taken int(10),Classes_Attended int(10),FOREIGN KEY(USN) REFERENCES stud
+ent(USN));
+
+CREATE TABLE Marks (
+    ->     MarkID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     USN VARCHAR(20),
+    ->     SubjectCode VARCHAR(20) NOT NULL,
+    ->     Assignment1 INT NOT NULL CHECK (Assignment1 BETWEEN 0 AND 25),
+    ->     Assignment2 INT NOT NULL CHECK (Assignment2 BETWEEN 0 AND 25),
+    ->     CIE1 INT NOT NULL CHECK (CIE1 BETWEEN 0 AND 25),
+    ->     CIE2 INT NOT NULL CHECK (CIE2 BETWEEN 0 AND 25),
+    ->     LabInternal INT NOT NULL CHECK (LabInternal BETWEEN 0 AND 25),
+    ->     FOREIGN KEY (USN) REFERENCES Student(USN)
+    -> );
+
+
+CREATE TABLE student ( FullName,varchar(50) not null,USN VARCHAR(20) primary key not null,Branch varchar(20) not null, semester varchar(5) not null));
